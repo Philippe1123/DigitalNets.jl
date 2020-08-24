@@ -1,0 +1,8 @@
+name = "DigitalNets"
+uuid = "c4cd57b1-0b05-4559-8e67-143ebd25faa9"
+authors = ["Philippe Blondeel <philippe.blondeel@kuleuven.be>"]
+version = "0.1.0"
+
+[deps]
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
