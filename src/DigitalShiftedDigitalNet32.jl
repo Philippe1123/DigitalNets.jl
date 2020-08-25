@@ -70,8 +70,8 @@ end
         end
     end
     for i in 1:length(x)
-#        x[i] = (cur[i]⊻d.Δ[i])*d.digital_net.recipid
-        x[i] = mod((cur[i]+d.Δ[i])*d.digital_net.recipid,1)
+        x[i] = (cur[i]⊻d.Δ[i])*d.digital_net.recipid
+#        x[i] = mod((cur[i]+d.Δ[i])*d.digital_net.recipid,1)
 
     end
     return x

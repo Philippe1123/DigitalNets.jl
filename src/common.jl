@@ -1,6 +1,7 @@
 
+abstract type DeterministicPoint{s} <: Random.AbstractRNG end
 
-abstract type AbstractDigitalNets{s} <: Random.AbstractRNG end
+abstract type AbstractDigitalNets{s} <: DeterministicPoint{s} end
 
 # number of dimensions
 Base.ndims(::AbstractDigitalNets{s}) where s = s::Int

@@ -49,8 +49,13 @@ end
 
 function DigitalNet32(s::Integer)
     s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
-#    print(@__DIR__())
     DigitalNet32(sobol_Cs,s,2^20)
+end
+
+function DigitalNet64_1(s::Integer)
+    s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
+#    print(@__DIR__())
+    DigitalNet64(sobol_Cs64,s,2^20)
 end
 
 function DigitalNet64(s::Integer)
