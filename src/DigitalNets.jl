@@ -5,7 +5,7 @@ import Random
 using DelimitedFiles
 using Random
 export AbstractDigitalNets, DigitalNet32,digitalnet_data,DelimitedFiles,reversebits,DigitalNet,getpoint,unsafe_getpoint!, unsafe_getpoint,DigitalNet64,DigitalNet64_2,DigitalShiftedDigitalNets32,DigitalShiftedDigitalNets64
-export DigitalNet64_1, DeterministicPoint
+export DigitalNet64_1, DeterministicPoint, uinttype
 
 export Higher_Or_QMC_Example
 
