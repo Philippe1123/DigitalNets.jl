@@ -1,4 +1,4 @@
-module Higher_Or_QMC_Example
+module Higher_Or_QMC_Example_Normal
 
 using DigitalNets
 using LatticeRules
@@ -7,7 +7,7 @@ using Statistics
 using Random
 using DelimitedFiles
 using PyPlot
-
+using MultilevelEstimators
 
 const exod2_base2_m20_CKN_file = joinpath(@__DIR__(),"exod2_base2_m20_CKN.txt")
 const exod2_base2_m20_CKN = readdlm(exod2_base2_m20_CKN_file,UInt32)
@@ -121,6 +121,15 @@ Matrix[:,id,Nshift]=shiftLat[id-1]
 end
 end
 
+for i=1:size(Matrix,1)
+    for j=1:size(Matrix,2)
+        for p=size(Matrix,3)
+Matrix[i,j,p]=MultilevelEstimators.transform(MultilevelEstimators.Uniform(-1,1),Matrix[i,j,p])
+end
+end
+end
+
+
 G=f(Matrix,c,b)
 
 
@@ -179,6 +188,14 @@ shiftNet=DigitalShiftedDigitalNets32(DigitalNet)
 for id=1:length(shiftNet[0:N])-1
 Matrix[:,id,Nshift]=shiftNet[id-1]
 
+end
+end
+
+for i=1:size(Matrix,1)
+    for j=1:size(Matrix,2)
+        for p=size(Matrix,3)
+Matrix[i,j,p]=MultilevelEstimators.transform(MultilevelEstimators.Uniform(-1,1),Matrix[i,j,p])
+end
 end
 end
 
@@ -245,6 +262,14 @@ Matrix[:,id,Nshift]=shiftNet[id-1]
 end
 end
 
+for i=1:size(Matrix,1)
+    for j=1:size(Matrix,2)
+        for p=size(Matrix,3)
+Matrix[i,j,p]=MultilevelEstimators.transform(MultilevelEstimators.Uniform(-1,1),Matrix[i,j,p])
+end
+end
+end
+
 G=f(Matrix,c,b)
 #println(Matrix)
 #println(G)
@@ -307,6 +332,14 @@ Matrix[:,id,Nshift]=shiftNet[id-1]
 end
 end
 
+for i=1:size(Matrix,1)
+    for j=1:size(Matrix,2)
+        for p=size(Matrix,3)
+Matrix[i,j,p]=MultilevelEstimators.transform(MultilevelEstimators.Uniform(-1,1),Matrix[i,j,p])
+end
+end
+end
+
 G=f(Matrix,c,b)
 #println(Matrix)
 #println(G)
@@ -338,7 +371,7 @@ end
 function Run()
 
 s=Int64(100)
-b=2.
+b=10.
 c=2.
 MC_std,N_MC,t1 = MC(s,c,b)
 QMC_lat_std,N_QMC_lat,t2 =QMC_Lattice_Shift(s,c,b)
