@@ -70,9 +70,25 @@ function DigitalNet64_2(s::Integer)
     DigitalNet64(sobol_alpha3_Bs53,s,2^30)
 end
 
+function DigitalNet64_2_64(s::Integer)
+    s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
+#    print(@__DIR__())
+    DigitalNet64(sobol_alpha3_Bs64,s,2^30)
+end
+
+function DigitalNet64_4(s::Integer)
+    s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
+#    print(@__DIR__())
+    DigitalNet64(sobol_alpha4_Bs53,s,2^30)
+end
 
 
-#reversebits(n::U) where {U<:Unsigned} = parse(U, reverse(bitstring(n)), base=2)
+
+function DigitalNet64_5(s::Integer)
+    s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
+#    print(@__DIR__())
+    DigitalNet64(sobol_alpha5_Bs53,s,2^30)
+end#reversebits(n::U) where {U<:Unsigned} = parse(U, reverse(bitstring(n)), base=2)
 
 
 #@inline function unsafe_getpoint!(x::Vector{<:AbstractFloat}, digital_net::DigitalNet32, k::UInt32)
