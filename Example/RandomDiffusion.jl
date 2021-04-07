@@ -1,4 +1,3 @@
-module RandomDiffusion
 
 
 
@@ -12,21 +11,21 @@ using LatticeRules
 
 
 function Main()
-#Run(2)
+Run(4)
 Run(3)
 Run(1)
-Run(4)
+Run(2)
 end
 
 function Run(Select::Int64)
 
-    correlation_length = 1.0
-    smoothness = 4.0
-    covariance_function = CovarianceFunction(2, Matern(correlation_length, smoothness))
-    n = 120
+    correlation_length = 0.3
+    smoothness = 1.0
+    cv = CovarianceFunction(2, Matern(correlation_length, smoothness))
+    n = 30
    pts = range(0, stop=1, length=n)
-    n_kl = 78
-    grf = GaussianRandomField(covariance_function, KarhunenLoeve(n_kl), pts, pts)
+    n_kl = 1000
+    grf = GaussianRandomField(cv, KarhunenLoeve(n_kl), pts, pts)
 
     grfs = Vector{typeof(grf)}(undef, 7)
     for i in 1:7
@@ -75,15 +74,15 @@ else
     mkdir(folder)
 end
 
-distributions = [TruncatedNormal(0,1,-2+i/n_kl,2-i/n_kl) for i in 1:n_kl]
+distributions = [TruncatedNormal(0,1,-2,2) for i in 1:n_kl]
 
 #distributions = [MultilevelEstimators.Uniform(0,1) for i in 1:n_kl]
 
 println(distributions)
 println(grf)
 
-estimator = Estimator(SL(), QMC(), sample_log, distributions,folder=folder,name=name,point_generator=pt,sample_mul_factor=1.2,nb_of_tols=70,nb_of_shifts=32)
-h = run(estimator, 5e-9)
+estimator = Estimator(SL(), QMC(), sample_log, distributions,folder=folder,name=name,point_generator=pt,sample_mul_factor=1.2,nb_of_tols=30,nb_of_shifts=8)
+h = run(estimator, 5e-7)
 end
 
 
@@ -129,13 +128,4 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-end
+Main()

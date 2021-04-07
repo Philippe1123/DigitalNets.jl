@@ -1,4 +1,3 @@
-module PlotPoints
 
 using DigitalNets
 using PyPlot
@@ -12,7 +11,7 @@ using MultilevelEstimators
 function Run()
 
 TruncNormal=MultilevelEstimators.TruncatedNormal(0.0,1.0,-2,2)
-TruncNormal=MultilevelEstimators.Uniform(0,1)
+#TruncNormal=MultilevelEstimators.Uniform(0,1)
 #TruncNormal=MultilevelEstimators.Normal()
 la=LatticeRule(100)
 dig64=DigitalNet64(100)
@@ -22,8 +21,8 @@ dig64_2=DigitalNet64_2(100)
 figure()
 for id=0:2^10-1
 
-scatter(MultilevelEstimators.transform(TruncNormal,la[id][1]),MultilevelEstimators.transform(TruncNormal,la[id][2]))
-title("Lattice Gauss")
+scatter(MultilevelEstimators.transform(MultilevelEstimators.Normal(),la[id][1]),MultilevelEstimators.transform(MultilevelEstimators.Normal(),la[id][2]),color="blue")
+title("Lattice Mapped")
 
 
 end
@@ -31,7 +30,7 @@ end
 figure()
 for id=0:2^10-1
 
-scatter(la[id][1],la[id][2])
+scatter(la[id][1],la[id][2],color="blue")
 title("Lattice")
 
 
@@ -41,7 +40,7 @@ end
 figure()
 for id=0:2^10-1
 
-scatter(dig64_2[id][1],dig64_2[id][2])
+scatter(dig64_2scatt[id][1],dig64_2[id][2])
 title("Sobol_3")
 
 
@@ -145,22 +144,4 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-end
+Run()
