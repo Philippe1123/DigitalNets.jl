@@ -80,18 +80,101 @@ end
 end
 
 
-#function getPoint(r::RandWrapper{s,q,U,M}, k::N where N<:Integer) where {s,q,U<:Unsigned,M}
-#    x = getPoint(r.generator, k)
-#    return xor.(r.shifts, repeat(convert(Array{UInt32},floor.(typemax(U)*x)),1,size(r.shifts,2))) * r.generator.recipid
-#end
+@inline function next!(x::Vector{<:AbstractFloat},d::DigitalShiftedDigitalNets64, k::UInt64,cur::Vector{<:UInt64})
+
+k > 0 || return zeros(length(x)),zeros(length(x))
+ctz= trailing_zeros(k)
+
+@inbounds for j in 1:ndims(d) #lenght of dim
+    cur[j] ⊻= d.digital_net.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
 
 
 
-#@inline function unsafe_getpoint!(x::Vector{<:AbstractFloat}, Digshift_DigNet32::DigitalShiftedDigitalNets32, k::UInt32)
-#    ϕ_k = reversebits(k) * 2.0^(-32) # gray coded radical inverse function in base 2
-#    @inbounds for i in 1:length(x)
-#        x[i] = ϕ_k * shifted_lattice_rule.lattice_rule.z[i] + shifted_lattice_rule.Δ[i]
-#        x[i] -= floor(x[i]) # mod 1
-#    end
-#    x
-#end
+    x[j] = d.digital_net.recipid * cur[j]
+end
+
+return x,cur
+
+end
+
+
+@inline function next!(x::Vector{<:AbstractFloat},d::DigitalShiftedDigitalNets32, k::UInt32,cur::Vector{<:UInt32})
+
+k > 0 || return zeros(length(x)),zeros(length(x))
+ctz= trailing_zeros(k)
+
+@inbounds for j in 1:ndims(d) #lenght of dim
+    cur[j] ⊻= d.digital_net.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
+
+
+
+    x[j] = d.digital_net.recipid * cur[j]
+end
+
+return x,cur
+
+end
+
+
+@inline function getCur(d::DigitalShiftedDigitalNets64)
+
+    return d.digital_net.cur
+end
+
+@inline function getState(d::DigitalShiftedDigitalNets64)
+
+    return d.digital_net.state[1]
+end
+
+@inline function getState(d::DigitalShiftedDigitalNets32)
+
+    return d.digital_net.state[1]
+end
+
+@inline function setCur(d::DigitalShiftedDigitalNets64,Newcur::Vector{<:UInt64})
+
+for j in 1:ndims(d)
+d.digital_net.cur[j]=Newcur[j]
+end
+end
+
+@inline function setState(d::DigitalShiftedDigitalNets64,NewState::Int64)
+
+d.digital_net.state[1]=NewState
+end
+
+@inline function setState(d::DigitalShiftedDigitalNets32,NewState::Int64)
+
+d.digital_net.state[1]=NewState
+end
+
+
+@inline function getCur(d::DigitalShiftedDigitalNets32)
+
+    return d.digital_net.cur
+end
+
+@inline function setCur(d::DigitalShiftedDigitalNets32,Newcur::Vector{<:UInt32})
+
+for j in 1:ndims(d)
+d.digital_net.cur[j]=Newcur[j]
+end
+end
+
+
+@inline function reset!(d::DigitalShiftedDigitalNets32)
+
+@inbounds for i in ndims(d)
+d.digital_net.cur[i]=UInt32(0)
+end
+d.digital_net.state[1]=0
+end
+
+@inline function reset!(d::DigitalShiftedDigitalNets64)
+
+@inbounds for i in ndims(d)
+d.digital_net.cur[i]=UInt64(0)
+end
+d.digital_net.state[1]=0
+
+end

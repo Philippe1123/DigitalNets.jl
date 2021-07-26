@@ -6,6 +6,7 @@ struct DigitalNet32{s} <: AbstractDigitalNets{s}
     n::Int64 # max number of points in the Digital net
     recipid::Float64 # internal
     cur::Vector{<:UInt32}
+    state::Vector{<:Int32}
 
 end
 
@@ -14,6 +15,7 @@ struct DigitalNet64{s} <: AbstractDigitalNets{s}
     n::Int64 # max number of points in the Digital net
     recipid::Float64 # internal
     cur::Vector{<:UInt64}
+    state::Vector{<:Int64}
 
 end
 
@@ -36,7 +38,7 @@ C=reversebits.(C)
 t = maximum([ length(string(C[1,i], base=2)) for i in 1:size(C,2) ])
 cur= zeros(UInt32,s)
 
-    DigitalNet32{s}(view(C,1:s,:), n,exp2(-t),cur)
+    DigitalNet32{s}(view(C,1:s,:), n,exp2(-t),cur,zeros(Int32,1))
 
 end
 
@@ -48,7 +50,7 @@ C=reversebits.(C)
 t = maximum([ length(string(C[1,i], base=2)) for i in 1:size(C,2) ])
 cur= zeros(UInt64,s)
 
-    DigitalNet64{s}(view(C,1:s,:), n,exp2(-t),cur)
+    DigitalNet64{s}(view(C,1:s,:), n,exp2(-t),cur,zeros(Int64,1))
 
 end
 
@@ -135,52 +137,108 @@ end
 
 @inline function reset!(d::DigitalNet32)
 
-for i in ndims(d)
+@inbounds for i in ndims(d)
 d.cur[i]=UInt32(0)
 end
-
+d.state[1]=0
 end
 
 @inline function reset!(d::DigitalNet64)
 
-for i in ndims(d)
+@inbounds for i in ndims(d)
 d.cur[i]=UInt64(0)
 end
+d.state[1]=0
 
 end
 
 
-@inline function next!(x::Vector{<:AbstractFloat},d::DigitalNet32, k::UInt32)
+@inline function next!(x::Vector{<:AbstractFloat},d::DigitalNet32, k::UInt32,cur::Vector{<:UInt32})
 
-#t=@elapsed begin
-if(k==0)
-    x=0
-else
+
+    k > 0 || return zeros(length(x)),zeros(length(x))
+    ctz= trailing_zeros(k)
+
+    @inbounds for j in 1:ndims(d) #lenght of dim
+    #    t=@elapsed begin
+    cur[j] ⊻= d.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
+
+    #    cur[j] = xor(cur[j],d.C[j,ctz+1])
+    #    end
+
+
+    #    println("Net ", t)
+
+    #    sleep(0.5)
+
+
+        x[j] = d.recipid * cur[j]
+    end
+#    println(x)
+    return x,cur
+
+end
+
+
+@inline function getCur(d::DigitalNet64)
+
+    return d.cur
+end
+
+@inline function getState(d::DigitalNet64)
+
+    return d.state[1]
+end
+
+@inline function getState(d::DigitalNet32)
+
+    return d.state[1]
+end
+
+@inline function setCur(d::DigitalNet64,Newcur::Vector{<:UInt64})
+
+for j in 1:ndims(d)
+d.cur[j]=Newcur[j]
+end
+end
+
+@inline function setState(d::DigitalNet64,NewState::Int64)
+
+d.state[1]=NewState
+end
+
+@inline function setState(d::DigitalNet32,NewState::Int64)
+
+d.state[1]=NewState
+end
+
+
+@inline function getCur(d::DigitalNet32)
+
+    return d.cur
+end
+
+@inline function setCur(d::DigitalNet32,Newcur::Vector{<:UInt32})
+
+for j in 1:ndims(d)
+d.cur[j]=Newcur[j]
+end
+end
+
+@inline function next!(x::Vector{<:AbstractFloat},d::DigitalNet64, k::UInt64,cur::Vector{<:UInt64})
+
+k > 0 || return zeros(length(x)),zeros(length(x))
 ctz= trailing_zeros(k)
-for j in 1:ndims(d) #lenght of dim
-    d.cur[j] ⊻= d.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
-    x[j] = d.recipid * d.cur[j]
-end
-end
 
-return x
+@inbounds for j in 1:ndims(d) #lenght of dim
+    cur[j] ⊻= d.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
 
-end
 
-@inline function next!(x::Vector{<:AbstractFloat},d::DigitalNet64, k::UInt64)
 
-#t=@elapsed begin
-if(k==0)
-    x=0
-else
-ctz= trailing_zeros(k)
-for j in 1:ndims(d) #lenght of dim
-    d.cur[j] ⊻= d.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
-    x[j] = d.recipid * d.cur[j]
-end
+    x[j] = d.recipid * cur[j]
 end
 
-return x
+return x,cur
 
 end
 
@@ -201,4 +259,36 @@ end
 
     end
     return x
+end
+
+
+@inline function unsafe_getcur!(d::DigitalNet64, k::UInt64)
+    k > 0 || return zeros(ndims(d)) # return zero if k == 0
+#    @assert k < d.nmax
+     k=xor(k,k>>> 1)
+    cur = zeros(UInt64,ndims(d))
+    for i in 1:length(bitstring(k))
+        if ( k & (1 << (i - 1) ) ) != 0
+            for j in 1:ndims(d)
+                cur[j] ⊻= d.C[j,i]
+            end
+        end
+    end
+    setCur(d,cur)
+
+end
+
+@inline function unsafe_getcur!(d::DigitalNet32, k::UInt32)
+    k > 0 || return zeros(ndims(d)) # return zero if k == 0
+#    @assert k < d.nmax
+     k=xor(k,k>>> 1)
+    cur = zeros(UInt32,ndims(d))
+    for i in 1:length(bitstring(k))
+        if ( k & (1 << (i - 1) ) ) != 0
+            for j in 1:ndims(d)
+                cur[j] ⊻= d.C[j,i]
+            end
+        end
+    end
+    setCur(d,cur)
 end
