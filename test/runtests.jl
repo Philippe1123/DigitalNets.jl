@@ -425,4 +425,43 @@ using DigitalNets, SpecialFunctions, Statistics, Test, PyPlot
     end
 
 
+    @testset "GeneratePointInMultiDimension" begin
+        dim=10
+        digital_net64=DigitalNet64(dim)
+        digital_net32=DigitalNet32(dim)
+
+
+        @test length(digital_net64[20])==ndims(digital_net64)
+        @test length(digital_net32[20])==ndims(digital_net32)
+
+    end
+
+    @testset "CheckState" begin
+        dim=10
+        digital_net64=DigitalNet64(dim)
+        digital_net32=DigitalNet32(dim)
+        @test getState(digital_net64) == 0
+        @test getState(digital_net32) == 0
+
+        digital_net64[0:20]
+        digital_net32[0:20]
+        @test getState(digital_net64) == 20
+        @test getState(digital_net32) == 20
+
+        digital_net64[21:25]
+        digital_net32[21:25]
+
+        @test getState(digital_net64) == 25
+        @test getState(digital_net32) == 25
+
+
+        digital_net64[0:5]
+        digital_net32[0:5]
+
+        @test getState(digital_net64) == 5
+        @test getState(digital_net32) == 5
+
+    end
+
+
 end
