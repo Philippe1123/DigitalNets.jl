@@ -18,10 +18,10 @@ Base.length(d::DigitalShiftedDigitalNets64) = length(d.digital_net)
 
 
 
-DigitalShiftedDigitalNets32(digital_net::DigitalNet32{s}) where s = DigitalShiftedDigitalNets32(digital_net, rand(s)) # specify lattice rule
+DigitalShiftedDigitalNets32(digital_net::DigitalNet32{s}) where s = DigitalShiftedDigitalNets32(digital_net, rand(s)) # specify Digital Net with 32 bits representation
 DigitalShiftedDigitalNets32(s::Integer) = DigitalShiftedDigitalNets32(DigitalNet32(s)) # specify number of dimensions only
 
-DigitalShiftedDigitalNets64(digital_net::DigitalNet64{s}) where s = DigitalShiftedDigitalNets64(digital_net, rand(s)) # specify lattice rule
+DigitalShiftedDigitalNets64(digital_net::DigitalNet64{s}) where s = DigitalShiftedDigitalNets64(digital_net, rand(s)) # specify Digital Net with 64 bits representation
 DigitalShiftedDigitalNets64(s::Integer) = DigitalShiftedDigitalNets64(DigitalNet32(s)) # specify number of dimensions only
 
 
@@ -53,8 +53,6 @@ end
     end
     for i in 1:length(x)
         x[i] = (cur[i]⊻d.Δ[i])*d.digital_net.recipid
-#x[i] = mod((cur[i]+d.Δ[i])*d.digital_net.recipid,1)
-
     end
     return x
 end
@@ -73,8 +71,6 @@ end
     end
     for i in 1:length(x)
         x[i] = (cur[i]⊻d.Δ[i])*d.digital_net.recipid
-#        x[i] = mod((cur[i]+d.Δ[i])*d.digital_net.recipid,1)
-#       x[i]=cur[i]*d.digital_net.recipid
     end
     return x
 end

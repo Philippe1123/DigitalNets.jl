@@ -60,31 +60,31 @@ function DigitalNet32(s::Integer)
     DigitalNet32(sobol_Cs,s,2^20)
 end
 
-function DigitalNet64_1(s::Integer)
+function DigitalNet64(s::Integer)
     s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
 #    print(@__DIR__())
     DigitalNet64(sobol_Cs64,s,2^20)
 end
 
-function DigitalNet64(s::Integer)
+function DigitalNet64InterlacedTwo(s::Integer)
     s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
 #    print(@__DIR__())
     DigitalNet64(sobol_alpha2_Bs53,s,2^20)
 end
 
-function DigitalNet64_2(s::Integer)
+function DigitalNet64InterlacedThree(s::Integer)
     s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
 #    print(@__DIR__())
     DigitalNet64(sobol_alpha3_Bs53,s,2^20)
 end
 
-function DigitalNet64_2_64(s::Integer)
+function DigitalNet64InterlacedThree64(s::Integer)
     s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
 #    print(@__DIR__())
     DigitalNet64(sobol_alpha3_Bs64,s,2^20)
 end
 
-function DigitalNet64_4(s::Integer)
+function DigitalNet64InterlacedFour(s::Integer)
     s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
 #    print(@__DIR__())
     DigitalNet64(sobol_alpha4_Bs53,s,2^20)
@@ -92,7 +92,7 @@ end
 
 
 
-function DigitalNet64_5(s::Integer)
+function DigitalNet64InterlacedFive(s::Integer)
     s > 0 || throw(ArgumentError("number of dimensions s must be larger than 0"))
 #    print(@__DIR__())
     DigitalNet64(sobol_alpha5_Bs53,s,2^20)
@@ -160,21 +160,9 @@ end
     ctz= trailing_zeros(k)
 
     @inbounds for j in 1:ndims(d) #lenght of dim
-    #    t=@elapsed begin
     cur[j] ⊻= d.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
-
-    #    cur[j] = xor(cur[j],d.C[j,ctz+1])
-    #    end
-
-
-    #    println("Net ", t)
-
-    #    sleep(0.5)
-
-
         x[j] = d.recipid * cur[j]
     end
-#    println(x)
     return x,cur
 
 end
@@ -232,9 +220,6 @@ ctz= trailing_zeros(k)
 
 @inbounds for j in 1:ndims(d) #lenght of dim
     cur[j] ⊻= d.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
-
-
-
     x[j] = d.recipid * cur[j]
 end
 
