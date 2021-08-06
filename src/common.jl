@@ -48,7 +48,7 @@ end
 @inline function getnextpoint(digital_net::AbstractDigitalNets, k::Number,cur::Vector{<:UInt32}) # get the k-th point of the lattice sequence
     0 ≤ k < length(digital_net) || throw(BoundsError(digital_net, k))
     x,cur=unsafe_getnextpoint(digital_net, convert(uinttype(digital_net), k),cur)
-    return x
+    return Float64(x)
 end
 
 @inline function getnextpoint(digital_net::AbstractDigitalNets, k::Number,cur::Vector{<:UInt64}) # get the k-th point of the lattice sequence
