@@ -110,7 +110,6 @@ end#reversebits(n::U) where {U<:Unsigned} = parse(U, reverse(bitstring(n)), base
 
 
 @inline function unsafe_getpoint!(x::Vector{<:AbstractFloat},d::DigitalNet32, k::UInt32)
-
 #t=@elapsed begin
 
     k > 0 || return zeros(length(x)) # return zero if k == 0
@@ -137,7 +136,7 @@ end
 
 @inline function reset!(d::DigitalNet32)
 
-@inbounds for i in ndims(d)
+@inbounds for i in 1:ndims(d) #Update
 d.cur[i]=UInt32(0)
 end
 d.state[1]=0
@@ -145,7 +144,7 @@ end
 
 @inline function reset!(d::DigitalNet64)
 
-@inbounds for i in ndims(d)
+@inbounds for i in 1:ndims(d)#Update
 d.cur[i]=UInt64(0)
 end
 d.state[1]=0
@@ -160,7 +159,7 @@ end
     ctz= trailing_zeros(k)
 
     @inbounds for j in 1:ndims(d) #lenght of dim
-    cur[j] ⊻= d.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
+        cur[j] ⊻= d.C[j,ctz+1] # cur = cur ⊻ d.C[j,i]
         x[j] = d.recipid * cur[j]
     end
     return x,cur

@@ -39,19 +39,19 @@ count_trailing_zero_bits(v::UInt32)=begin
 
 
 
-@inline function getpoint(digital_net::AbstractDigitalNets, k::Number) # get the k-th point of the lattice sequence
+@inline function getpoint(digital_net::AbstractDigitalNets, k::Number) # get the k-th point of the digital sequence
     0 ≤ k < length(digital_net) || throw(BoundsError(digital_net, k))
     unsafe_getpoint(digital_net, convert(uinttype(digital_net), k))
 end
 
 
-@inline function getnextpoint(digital_net::AbstractDigitalNets, k::Number,cur::Vector{<:UInt32}) # get the k-th point of the lattice sequence
+@inline function getnextpoint(digital_net::AbstractDigitalNets, k::Number,cur::Vector{<:UInt32}) # get the k-th point of the digital sequence
     0 ≤ k < length(digital_net) || throw(BoundsError(digital_net, k))
     x,cur=unsafe_getnextpoint(digital_net, convert(uinttype(digital_net), k),cur)
     return x
 end
 
-@inline function getnextpoint(digital_net::AbstractDigitalNets, k::Number,cur::Vector{<:UInt64}) # get the k-th point of the lattice sequence
+@inline function getnextpoint(digital_net::AbstractDigitalNets, k::Number,cur::Vector{<:UInt64}) # get the k-th point of the digital sequence
     0 ≤ k < length(digital_net) || throw(BoundsError(digital_net, k))
 #    println("getnextpoint")
     x,cur=unsafe_getnextpoint(digital_net, convert(uinttype(digital_net), k),cur)
@@ -60,31 +60,30 @@ end
 
 @inline unsafe_getnextpoint(digital_net::AbstractDigitalNets{s}, k::UInt32,cur::Vector{<:UInt32}) where s = begin
     x = Vector{Float32}(undef, s)
-    x,cur=next!(x, digital_net, k,cur::Vector{<:UInt32}) # dispatch to AbstractLatticeRule subtype
+    x,cur=next!(x, digital_net, k,cur::Vector{<:UInt32}) 
 #    println(x)
     return x,cur
 end
 
 @inline unsafe_getnextpoint(digital_net::AbstractDigitalNets{s}, k::UInt64,cur::Vector{<:UInt64}) where s = begin
     x = Vector{Float64}(undef, s)
-    x,cur=next!(x, digital_net, k,cur::Vector{<:UInt64}) # dispatch to AbstractLatticeRule subtype
+    x,cur=next!(x, digital_net, k,cur::Vector{<:UInt64}) 
     return x,cur
 end
 
 # get the k-th point of the sequence without bounds checking for 32 bit integers
 @inline unsafe_getpoint(digital_net::AbstractDigitalNets{s}, k::UInt32) where s = begin
     x = Vector{Float32}(undef, s)
-    unsafe_getpoint!(x, digital_net, k) # dispatch to AbstractLatticeRule subtype
+    unsafe_getpoint!(x, digital_net, k) 
 end
 
 @inline unsafe_getpoint(digital_net::AbstractDigitalNets{s}, k::UInt64) where s = begin
     x = Vector{Float64}(undef, s)
-    unsafe_getpoint!(x, digital_net, k) # dispatch to AbstractLatticeRule subtype
+    unsafe_getpoint!(x, digital_net, k) 
 end
 
 
 
-#Base.iterate(lattice_rule::AbstractDigitalNets, state=uinttype(lattice_rule)(0)) = state ≥ length(lattice_rule) ? nothing : (getpoint(lattice_rule, state), state + uinttype(lattice_rule)(1))
 Base.iterate(Dig_net::AbstractDigitalNets, state=uinttype(Dig_net)(0)) = state ≥ length(Dig_net) ? nothing : (getnextpoint(Dig_net, state,cur), state + uinttype(Dig_net)(1))
 Base.eltype(::Type{<:AbstractDigitalNets}) = Vector{Float64}
 
@@ -97,10 +96,8 @@ function Base.getindex(Dig_net::AbstractDigitalNets, I)
 #   println(state)
 #@inline
 #if((I[1]!=0 || state!=0) & I[1]!= state+1)
-
     if((I[1]!=0 &&( I[1]!= state+1)) || (state!=0 &&(I[1]!= state+1)) )
 
-    #println("Reset Hit")
     reset!(Dig_net)
     if(I[1]-1>=0) unsafe_getcur!(Dig_net,convert(uinttype(Dig_net), I[1]-1))end
 end
