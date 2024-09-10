@@ -160,7 +160,7 @@ end
 
 @inline function reset!(d::DigitalShiftedDigitalNets32)
 
-@inbounds for i in ndims(d)
+@inbounds for i in 1:ndims(d)# update
 d.digital_net.cur[i]=UInt32(0)
 end
 d.digital_net.state[1]=0
@@ -168,7 +168,7 @@ end
 
 @inline function reset!(d::DigitalShiftedDigitalNets64)
 
-@inbounds for i in ndims(d)
+@inbounds for i in 1:ndims(d)# update
 d.digital_net.cur[i]=UInt64(0)
 end
 d.digital_net.state[1]=0
